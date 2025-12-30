@@ -1,0 +1,22 @@
+mysql-connector-j-8.0.33.jar
+
+# Maven
+target/
+
+# Local Maven repository (NEVER commit)
+.m2/
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs (if any)
+*.log
+
+# Environment-specific configs
+.env
