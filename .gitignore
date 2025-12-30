@@ -20,3 +20,6 @@ Thumbs.db
 
 # Environment-specific configs
 .env
+
+
+drafts/

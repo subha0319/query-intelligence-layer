@@ -7,6 +7,7 @@ import com.adaptive.mysql.query.QueryFingerprint;
 import com.adaptive.mysql.stats.QueryStatsStore;
 import com.adaptive.mysql.cache.QueryCache;
 import com.adaptive.mysql.cache.CacheStats;
+import com.adaptive.mysql.indexadvisor.IndexAdvisor;
 
 import java.util.List;
 
@@ -16,26 +17,26 @@ import com.adaptive.mysql.dependency.DependencyGraph;
 public class QueryExecutor {
 
     private final MySQLClient dbClient;
-
     private final QueryStatsStore statsStore;
-
     private final QueryCache cache;
-
     private final DependencyGraph dependencyGraph;
-
     private final CacheStats cacheStats;
+    private final IndexAdvisor indexAdvisor;
 
 
     public QueryExecutor(MySQLClient dbClient,
                         QueryStatsStore statsStore,
                         QueryCache cache,
                         DependencyGraph dependencyGraph,
-                        CacheStats cacheStats) {
+                        CacheStats cacheStats,
+                        IndexAdvisor indexAdvisor) {
+
         this.dbClient = dbClient;
         this.statsStore = statsStore;
         this.cache = cache;
         this.dependencyGraph = dependencyGraph;
         this.cacheStats = cacheStats;
+        this.indexAdvisor = indexAdvisor;
     }
 
 
@@ -106,6 +107,11 @@ public class QueryExecutor {
         // System.out.println("Columns: " + metadata.getColumns());
 
         statsStore.record(fingerprint, durationMs);
+        indexAdvisor.observe(
+            metadata,
+            statsStore.getAllStats().get(fingerprint)
+        );
+        // Only WHERE columns are considered for safe indexing advice
 
         return new ExecutionResult(type, durationMs, result);
     }
